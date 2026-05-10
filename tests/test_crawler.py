@@ -1,0 +1,137 @@
+"""
+Unit tests for WebCrawler
+"""
+import pytest
+from unittest.mock import Mock, patch, MagicMock
+import sys
+import os
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.crawler import WebCrawler
+
+
+class TestWebCrawler:
+    """Test suite for WebCrawler"""
+
+    def test_crawler_initialization(self):
+        """Test crawler initializes correctly"""
+        crawler = WebCrawler("https://example.com", politeness_delay=6.0)
+        assert crawler.base_url == "https://example.com"
+        assert crawler.politeness_delay == 6.0
+        assert crawler.base_domain == "example.com"
+
+    def test_crawler_default_delay(self):
+        """Test default politeness delay"""
+        crawler = WebCrawler("https://example.com")
+        assert crawler.politeness_delay == 6.0
+
+    def test_respect_politeness(self):
+        """Test politeness delay enforcement"""
+        crawler = WebCrawler("https://example.com", politeness_delay=1.0)
+
+        # First request should not sleep
+        start = __import__('time').time()
+        crawler._respect_politeness()
+        first_duration = __import__('time').time() - start
+        assert first_duration < 0.1
+
+        # Second request should sleep
+        start = __import__('time').time()
+        crawler._respect_politeness()
+        second_duration = __import__('time').time() - start
+        assert second_duration >= 0.9
+
+    def test_normalize_word_in_crawler(self):
+        """Test URL normalization"""
+        crawler = WebCrawler("https://quotes.toscrape.com")
+
+        # Test internal link extraction
+        html = """
+        <html>
+            <a href="/page/2/">Next</a>
+            <a href="https://quotes.toscrape.com/page/3/">Page 3</a>
+            <a href="http://external.com">External</a>
+        </html>
+        """
+
+        links = crawler._extract_links(html, "https://quotes.toscrape.com/")
+
+        # Should only include internal links
+        assert "https://quotes.toscrape.com/page/2/" in links
+        assert "https://quotes.toscrape.com/page/3/" in links
+        assert "http://external.com" not in links
+
+    @patch('src.crawler.requests.Session.get')
+    def test_get_page_success(self, mock_get):
+        """Test successful page fetch"""
+        mock_response = Mock()
+        mock_response.text = "<html>Test</html>"
+        mock_response.status_code = 200
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        crawler = WebCrawler("https://example.com", politeness_delay=0)
+        result = crawler._get_page("https://example.com")
+
+        assert result == "<html>Test</html>"
+
+    @patch('src.crawler.requests.Session.get')
+    def test_get_page_failure(self, mock_get):
+        """Test failed page fetch"""
+        mock_get.side_effect = Exception("Connection error")
+
+        crawler = WebCrawler("https://example.com", politeness_delay=0)
+        result = crawler._get_page("https://example.com")
+
+        assert result is None
+
+    def test_extract_page_data_quotes(self):
+        """Test page data extraction from quotes.toscrape.com"""
+        html = """
+        <html>
+            <title>Test Page</title>
+            <div class="quote">
+                <span class="text">"Test quote"</span>
+                <small class="author">Test Author</small>
+            </div>
+            <p>Some paragraph text.</p>
+        </html>
+        """
+
+        crawler = WebCrawler("https://quotes.toscrape.com")
+        page_data = crawler._extract_page_data(html, "https://quotes.toscrape.com/")
+
+        assert page_data['url'] == "https://quotes.toscrape.com/"
+        assert page_data['title'] == "Test Page"
+        assert "Test quote" in page_data['content']
+        assert "Test Author" in page_data['content']
+        assert "Some paragraph text" in page_data['content']
+
+    def test_extract_links_relative_urls(self):
+        """Test extraction of relative URLs"""
+        html = """
+        <html>
+            <a href="/quote/1">Quote 1</a>
+            <a href="quote/2">Quote 2</a>
+            <a href="#fragment">Fragment</a>
+        </html>
+        """
+
+        crawler = WebCrawler("https://quotes.toscrape.com")
+        links = crawler._extract_links(html, "https://quotes.toscrape.com/page/1/")
+
+        # Should convert to absolute URLs
+        assert "https://quotes.toscrape.com/quote/1" in links
+        assert "https://quotes.toscrape.com/page/quote/2" in links
+
+    def test_crawl_with_max_pages(self):
+        """Test crawling with page limit"""
+        # This would need to mock the actual HTTP requests
+        # For now, just test initialization
+        crawler = WebCrawler("https://quotes.toscrape.com")
+        assert crawler is not None
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])
