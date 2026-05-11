@@ -1,6 +1,3 @@
-"""
-Unit tests for SearchEngine
-"""
 import pytest
 import sys
 import os
