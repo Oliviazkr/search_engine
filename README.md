@@ -9,7 +9,7 @@ pip install -r requirements.txt
 python src/main.py
 
 ## Commands
-
+```bash
 build                     - Crawl website and build index
 load                      - Load saved index from disk
 print <word>              - Show inverted index for a word
@@ -18,7 +18,7 @@ stats                     - Show index statistics
 exit                      - Quit program
 
 ## Example
-
+```bash
 > build
 Crawl complete. 10 pages indexed.
 
