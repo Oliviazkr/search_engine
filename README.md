@@ -36,11 +36,11 @@ Inverted index for 'life':
 Index loaded from data/index.json
 
 ## Testing
-
+```bash
 python -m pytest tests/ -v
 
 ## Project Structure
-
+```bash
 search_engine/
 ├── src/
 │   ├── crawler.py
