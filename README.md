@@ -1,7 +1,7 @@
 # Search Engine Tool - XJCO3011 Coursework 2
 
 ## Installation
-
+```bash
 pip install -r requirements.txt
 
 ## Usage
