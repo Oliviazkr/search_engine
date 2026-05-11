@@ -34,7 +34,7 @@ Inverted index for 'life':
 
 > load
 Index loaded from data/index.json
-
+```
 ## Testing
 ```bash
 python -m pytest tests/ -v
