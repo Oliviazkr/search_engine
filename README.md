@@ -16,7 +16,7 @@ print <word>              - Show inverted index for a word
 find <phrase>             - Search for pages
 stats                     - Show index statistics
 exit                      - Quit program
-
+```
 ## Example
 ```bash
 > build
