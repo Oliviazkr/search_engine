@@ -1,28 +1,64 @@
-# XJCO3011 Coursework 2: Search Engine Tool
-
-## Project Overview
-
-A command-line search engine tool that crawls [quotes.toscrape.com](https://quotes.toscrape.com/), builds an inverted index, and provides search functionality. Built for the Web Services and Web Data module at the University of Leeds.
-
-### Features
-
-- **Web Crawler**: Respects politeness window (6 seconds between requests)
-- **Inverted Index**: Stores word frequency and position information
-- **Case-Insensitive Search**: 'Good' and 'good' are treated the same
-- **Phrase Search**: Find pages containing all words in a query
-- **Persistent Storage**: Save/load index to disk
-- **Command Line Interface**: Four main commands (build, load, print, find)
+# Search Engine Tool - XJCO3011 Coursework 2
 
 ## Installation
 
-### Prerequisites
+pip install -r requirements.txt
 
-- Python 3.8 or higher
-- pip package manager
+## Usage
 
-### Setup
+python src/main.py
 
-1. Clone the repository:
-```bash
-git clone <your-repository-url>
-cd search_engine
+## Commands
+
+build                     - Crawl website and build index
+load                      - Load saved index from disk
+print <word>              - Show inverted index for a word
+find <phrase>             - Search for pages
+stats                     - Show index statistics
+exit                      - Quit program
+
+## Example
+
+> build
+Crawl complete. 10 pages indexed.
+
+> find love
+Found 8 page(s) containing 'love':
+  https://quotes.toscrape.com/ (relevance: 4)
+
+> print life
+Inverted index for 'life':
+  https://quotes.toscrape.com/
+    Frequency: 4
+    Positions: [15, 23, 31, 42]
+
+> load
+Index loaded from data/index.json
+
+## Testing
+
+python -m pytest tests/ -v
+
+## Project Structure
+
+search_engine/
+├── src/
+│   ├── crawler.py
+│   ├── indexer.py
+│   ├── search.py
+│   ├── storage.py
+│   └── main.py
+├── tests/
+│   ├── test_crawler.py
+│   ├── test_indexer.py
+│   └── test_search.py
+├── data/
+├── requirements.txt
+└── README.md
+
+## Notes
+
+- Politeness window: 6 seconds between requests
+- Case-insensitive: 'Good' = 'good'
+- First run: Use 'build' to create index (takes 3-4 minutes)
+- Subsequent runs: Use 'load' to load saved index
