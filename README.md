@@ -1,5 +1,20 @@
 # Search Engine Tool - XJCO3011 Coursework 2
 
+## Project Overview
+
+This project implements a command-line search engine tool that crawls a website, builds an inverted index, and supports search queries. It was developed as part of the XJCO3011 Web Services and Web Data module at the University of Leeds.
+
+**Purpose:** To demonstrate understanding of web crawling, inverted indexing, and search algorithms.
+
+**Target Website:** https://quotes.toscrape.com/
+
+**Key Features:**
+- Crawls all pages with a 6-second politeness window
+- Builds inverted index with word frequency and position statistics
+- Supports single-word and multi-word queries
+- Persistent index storage (save/load to disk)
+- Case-insensitive search
+
 ## Installation
 ```bash
 pip install -r requirements.txt
