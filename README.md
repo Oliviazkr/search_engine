@@ -3,11 +3,11 @@
 ## Installation
 ```bash
 pip install -r requirements.txt
-
+```
 ## Usage
 ```bash
 python src/main.py
-
+```
 ## Commands
 ```bash
 build                     - Crawl website and build index
